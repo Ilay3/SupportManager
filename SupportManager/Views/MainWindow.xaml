@@ -1,0 +1,162 @@
+﻿<!-- Views/MainWindow.xaml -->
+<Window x:Class="SupportManager.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:SupportManager.Views"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Support Manager" Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen">
+    <DockPanel>
+        <!-- Меню -->
+        <Menu DockPanel.Dock="Top" Background="{DynamicResource MaterialDesignPaper}">
+            <MenuItem Header="_Файл">
+                <MenuItem Header="_Экспорт в Word" Command="{Binding ExportToWordCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="Resources/export_icon.png" Width="16" Height="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="_Выход" Click="ExitMenuItem_Click">
+                    <MenuItem.Icon>
+                        <Image Source="Resources/exit_icon.png" Width="16" Height="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Редактировать">
+                <MenuItem Header="_Добавить" Command="{Binding AddCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="Resources/add_icon.png" Width="16" Height="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Редактировать" Command="{Binding EditCommand}" 
+                          IsEnabled="{Binding SelectedRecord, Converter={StaticResource NullToBoolConverter}}">
+                    <MenuItem.Icon>
+                        <Image Source="Resources/edit_icon.png" Width="16" Height="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Удалить" Command="{Binding DeleteCommand}" 
+                          IsEnabled="{Binding SelectedRecord, Converter={StaticResource NullToBoolConverter}}">
+                    <MenuItem.Icon>
+                        <Image Source="Resources/delete_icon.png" Width="16" Height="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Помощь">
+                <MenuItem Header="_О программе" Click="AboutMenuItem_Click">
+                    <MenuItem.Icon>
+                        <Image Source="Resources/about_icon.png" Width="16" Height="16"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <!-- Основной Контент -->
+        <Grid Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <!-- Левая панель для фильтров -->
+                <ColumnDefinition Width="*"/>
+                <!-- Правая панель для списка -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Левая панель: Фильтры -->
+            <StackPanel Grid.Column="0" Margin="10" VerticalAlignment="Top">
+                <!-- Фильтр по поиску -->
+                <TextBlock Text="Поиск:" FontWeight="Bold" Margin="0,0,0,5"/>
+                <materialDesign:TextField Hint="Введите название или исполнителя"
+                                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                                         Margin="0,0,0,10"/>
+
+                <!-- Фильтр по исполнителю -->
+                <TextBlock Text="Фильтр по исполнителю:" FontWeight="Bold" Margin="0,0,0,5"/>
+                <materialDesign:ComboBoxAssist.InputWidth>
+                    <sys:Double>250</sys:Double>
+                </materialDesign:ComboBoxAssist.InputWidth>
+                <ComboBox ItemsSource="{Binding Executors}" 
+                          SelectedItem="{Binding SelectedExecutor}" 
+                          Height="30" Margin="0,0,0,10"
+                          Style="{StaticResource MaterialDesignComboBox}" />
+
+                <!-- Фильтр по статусу поддержки -->
+                <TextBlock Text="Фильтр по статусу поддержки:" FontWeight="Bold" Margin="0,0,0,5"/>
+                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                    <RadioButton Content="Все" 
+                                 IsChecked="{Binding IsActiveSupport, Converter={StaticResource NullableBoolToRadioConverter}, ConverterParameter=None}" 
+                                 GroupName="SupportStatus" 
+                                 Margin="0,0,0,5"/>
+                    <RadioButton Content="Активная" 
+                                 IsChecked="{Binding IsActiveSupport, Converter={StaticResource NullableBoolToRadioConverter}, ConverterParameter=True}" 
+                                 GroupName="SupportStatus" 
+                                 Margin="0,0,0,5"/>
+                    <RadioButton Content="Неактивная" 
+                                 IsChecked="{Binding IsActiveSupport, Converter={StaticResource NullableBoolToRadioConverter}, ConverterParameter=False}" 
+                                 GroupName="SupportStatus"/>
+                </StackPanel>
+
+                <!-- Кнопка сброса фильтров -->
+                <Button Content="Сбросить фильтры" Command="{Binding ResetFiltersCommand}" 
+                        Width="200" Height="40" />
+            </StackPanel>
+
+            <!-- Правая панель: Список записей -->
+            <DockPanel Grid.Column="1" Margin="10">
+                <!-- Кнопки Добавить, Редактировать, Удалить, Экспортировать -->
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10">
+                    <Button Command="{Binding AddCommand}" Width="100" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="Resources/add_icon.png" Width="16" Height="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="Добавить" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding EditCommand}" Width="100" Margin="0,0,10,0" 
+                            IsEnabled="{Binding SelectedRecord, Converter={StaticResource NullToBoolConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="Resources/edit_icon.png" Width="16" Height="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="Редактировать" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding DeleteCommand}" Width="100" 
+                            IsEnabled="{Binding SelectedRecord, Converter={StaticResource NullToBoolConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="Resources/delete_icon.png" Width="16" Height="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="Удалить" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ExportToWordCommand}" Width="150" Margin="10,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="Resources/export_icon.png" Width="16" Height="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="Экспорт в Word" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- DataGrid для отображения записей -->
+                <DataGrid ItemsSource="{Binding PagedRecords}" 
+                          SelectedItem="{Binding SelectedRecord}" 
+                          AutoGenerateColumns="False" 
+                          CanUserAddRows="False"
+                          Style="{StaticResource MaterialDesignDataGrid}"
+                          VerticalAlignment="Stretch" 
+                          HorizontalAlignment="Stretch">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="№ п.п" Binding="{Binding Id}" Width="Auto"/>
+                        <DataGridTextColumn Header="Дата оформления" Binding="{Binding DateOfCreation, StringFormat=d}" Width="150"/>
+                        <DataGridTextColumn Header="Наименование, обозначение угла" Binding="{Binding NameDesignation}" Width="*"/>
+                        <DataGridTextColumn Header="Исполнитель" Binding="{Binding Executor}" Width="150"/>
+                        <DataGridTextColumn Header="Дата окончания поддержки" Binding="{Binding SupportEndDate, StringFormat=d}" Width="200"/>
+                        <DataGridTextColumn Header="Статус поддержки" Binding="{Binding DaysLeftDisplay}" Width="200"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Панель навигации -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" DockPanel.Dock="Bottom" Margin="0,10,0,0">
+                    <Button Content="Назад" Command="{Binding PreviousPageCommand}" Width="75" Margin="0,0,10,0"/>
+                    <TextBlock Text="{Binding CurrentPage}" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                    <TextBlock Text="из" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding TotalPages}" VerticalAlignment="Center" Margin="5,0,0,0" FontWeight="Bold"/>
+                    <Button Content="Вперед" Command="{Binding NextPageCommand}" Width="75" Margin="10,0,0,0"/>
+                </StackPanel>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</Window>
