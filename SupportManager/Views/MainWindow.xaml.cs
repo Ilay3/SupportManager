@@ -1,5 +1,7 @@
 ﻿// Views/MainWindow.xaml.cs
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
 using SupportManager.Services;
 using SupportManager.ViewModels;
 
@@ -10,20 +12,33 @@ namespace SupportManager.Views
         public MainWindow()
         {
             InitializeComponent();
-
-            // Внедрение зависимости
-            var service = new SupportRecordService();
-            DataContext = new MainViewModel(service);
+            DataContext = new MainViewModel(new SupportRecordService());
         }
 
-        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
+        private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Application.Current.Shutdown();
-        }
-
-        private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Support Manager v1.0\n.", "О программе", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (DataContext is MainViewModel vm && vm.SelectedRecord != null)
+            {
+                string pdfPath = vm.SelectedRecord.PdfPath;
+                if (!string.IsNullOrEmpty(pdfPath))
+                {
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo(pdfPath) { UseShellExecute = true });
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Не удалось открыть PDF: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Для данной записи не указан PDF-файл.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
         }
     }
+
+    
+
 }

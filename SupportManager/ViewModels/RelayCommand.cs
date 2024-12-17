@@ -1,8 +1,8 @@
-﻿// ViewModels/RelayCommand.cs
+﻿// Helpers/RelayCommand.cs
 using System;
 using System.Windows.Input;
 
-namespace SupportManager.ViewModels
+namespace SupportManager.Helpers
 {
     public class RelayCommand : ICommand
     {

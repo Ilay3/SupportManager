@@ -2,34 +2,39 @@
 <Window x:Class="SupportManager.Views.AddEditWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Добавить / Редактировать Запись" Height="400" Width="400">
+        Title="Добавить / Редактировать Запись" Height="450" Width="400" WindowStartupLocation="CenterOwner">
     <Grid Margin="10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Margin="0,0,0,10">
-            <TextBlock Text="Наименование, обозначение угла:"/>
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Наименование:"/>
             <TextBox Text="{Binding Record.NameDesignation}" Margin="0,5,0,10"/>
 
             <TextBlock Text="Исполнитель:"/>
             <TextBox Text="{Binding Record.Executor}" Margin="0,5,0,10"/>
 
             <TextBlock Text="Дата оформления:"/>
-            <DatePicker SelectedDate="{Binding Record.DateOfCreation}" Margin="0,5,0,10" IsEnabled="False"/>
+            <DatePicker SelectedDate="{Binding Record.DateOfCreation}" IsEnabled="False" Margin="0,5,0,10"/>
 
             <TextBlock Text="Дата окончания поддержки:"/>
             <DatePicker SelectedDate="{Binding Record.SupportEndDate}" Margin="0,5,0,10"/>
+
+            <TextBlock Text="PDF файл:" FontWeight="Bold" Margin="0,10,0,5"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Text="{Binding Record.PdfPath}" Width="250" IsReadOnly="True"/>
+                <Button Content="Выбрать" Command="{Binding SelectPdfCommand}" Margin="5,0,0,0"/>
+            </StackPanel>
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Сохранить" Command="{Binding SaveCommand}" 
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" 
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Сохранить" Command="{Binding SaveCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                     Width="100" Margin="0,0,10,0"/>
-            <Button Content="Отмена" Command="{Binding CancelCommand}" 
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" 
+            <Button Content="Отмена" Command="{Binding CancelCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                     Width="100"/>
         </StackPanel>
     </Grid>

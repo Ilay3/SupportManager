@@ -89,5 +89,29 @@ namespace SupportManager.Services
                 }
             }
         }
+
+        private void CreateBackup()
+        {
+            try
+            {
+                var appDir = AppDomain.CurrentDomain.BaseDirectory;
+                var backupDir = Path.Combine(appDir, "Backups");
+
+                if (!Directory.Exists(backupDir))
+                {
+                    Directory.CreateDirectory(backupDir);
+                }
+
+                var backupFileName = $"data_backup_{DateTime.Now:yyyyMMdd_HHmmss}.json";
+                var backupFilePath = Path.Combine(backupDir, backupFileName);
+
+                File.Copy(_dataFilePath, backupFilePath, true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при создании резервной копии: {ex.Message}");
+            }
+        }
+
     }
 }

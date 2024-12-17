@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DocX" Version="3.0.1" />
     <PackageReference Include="MaterialDesignColors" Version="3.1.0" />
     <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
-    <PackageReference Include="Xceed.Words.NET" Version="3.0.24152.1219" />
   </ItemGroup>
 
 </Project>
