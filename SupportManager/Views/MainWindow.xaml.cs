@@ -15,11 +15,12 @@ namespace SupportManager.Views
             DataContext = new MainViewModel(new SupportRecordService());
         }
 
-        private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void ListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (DataContext is MainViewModel vm && vm.SelectedRecord != null)
             {
                 string pdfPath = vm.SelectedRecord.PdfPath;
+
                 if (!string.IsNullOrEmpty(pdfPath))
                 {
                     try
@@ -37,8 +38,6 @@ namespace SupportManager.Views
                 }
             }
         }
+
     }
-
-    
-
 }

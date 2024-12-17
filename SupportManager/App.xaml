@@ -7,6 +7,7 @@
     <Application.Resources>
         <!-- Конвертеры для управления состоянием кнопок и RadioButton -->
         <converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
+
         <converters:NullableBoolToRadioConverter x:Key="NullableBoolToRadioConverter"/>
     </Application.Resources>
 </Application>

@@ -1,87 +1,188 @@
-﻿<!-- Views/MainWindow.xaml -->
-<Window x:Class="SupportManager.Views.MainWindow"
+﻿<Window x:Class="SupportManager.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:local="clr-namespace:SupportManager.Views"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Support Manager" Height="600" Width="1000"
-        WindowStartupLocation="CenterScreen">
+        Title="Support Manager" Height="600" Width="900"
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        Background="#F3F3F3" WindowStyle="SingleBorderWindow">
+    <Window.Resources>
+        <!-- Стиль для красивых кнопок -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#0078D7"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                CornerRadius="5" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#005499"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#003366"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PaginationButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Width" Value="75"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"/>
+            <!-- Левая панель -->
             <ColumnDefinition Width="*"/>
+            <!-- Основная панель -->
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Margin="10">
-            <TextBlock Text="Поиск:" FontWeight="Bold"/>
-            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
+        <!-- Левая панель -->
+        <StackPanel Grid.Column="0" Background="#FFFFFF" Margin="10">
+            <TextBlock Text="Фильтры" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
+            <TextBlock Text="Поиск:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     Background="#F9F9F9" BorderBrush="#D3D3D3" Padding="5" Margin="0,0,0,15"/>
 
-            <TextBlock Text="Фильтр по исполнителю:" FontWeight="Bold"/>
-            <ComboBox ItemsSource="{Binding Executors}" SelectedItem="{Binding SelectedExecutor}" Margin="0,5,0,10"/>
+            <TextBlock Text="Фильтр по исполнителю:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <ComboBox ItemsSource="{Binding Executors}" SelectedItem="{Binding SelectedExecutor}"
+                      Background="#F9F9F9" BorderBrush="#D3D3D3" Padding="5" Margin="0,0,0,15"/>
 
-            <TextBlock Text="Фильтр по статусу:" FontWeight="Bold"/>
-            <StackPanel Margin="0,5,0,10">
+            <TextBlock Text="Фильтр по статусу:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <StackPanel Margin="0,5,0,15">
                 <RadioButton Content="Все"
-                             IsChecked="{Binding IsActiveSupport, Converter={StaticResource NullableBoolToRadioConverter}, ConverterParameter=None}"
-                             GroupName="SupportStatus"/>
+             IsChecked="{Binding IsActiveSupport, Converter={StaticResource NullableBoolToRadioConverter}, ConverterParameter=None}"
+             GroupName="StatusGroup" Margin="0,3"/>
+
                 <RadioButton Content="Активная"
-                             IsChecked="{Binding IsActiveSupport, Converter={StaticResource NullableBoolToRadioConverter}, ConverterParameter=True}"
-                             GroupName="SupportStatus"/>
+             IsChecked="{Binding IsActiveSupport, Converter={StaticResource NullableBoolToRadioConverter}, ConverterParameter=True}"
+             GroupName="StatusGroup" Margin="0,3"/>
+
                 <RadioButton Content="Неактивная"
-                             IsChecked="{Binding IsActiveSupport, Converter={StaticResource NullableBoolToRadioConverter}, ConverterParameter=False}"
-                             GroupName="SupportStatus"/>
+             IsChecked="{Binding IsActiveSupport, Converter={StaticResource NullableBoolToRadioConverter}, ConverterParameter=False}"
+             GroupName="StatusGroup" Margin="0,3"/>
             </StackPanel>
 
-            <Button Content="Сбросить фильтры" Command="{Binding ResetFiltersCommand}" Width="200"/>
+            <Button Content="Сбросить фильтры" Style="{StaticResource PrimaryButtonStyle}"/>
         </StackPanel>
 
-        <DockPanel Grid.Column="1" Margin="10">
-            <DockPanel LastChildFill="True">
-                <!-- Верхняя панель с кнопками добавления/редактирования/удаления -->
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10">
-                    <Button Content="Добавить" Command="{Binding AddCommand}" Width="100" Margin="0,0,10,0"/>
-                    <Button Content="Редактировать" Command="{Binding EditCommand}" Width="100" Margin="0,0,10,0" 
-                    IsEnabled="{Binding SelectedRecord, Converter={StaticResource NullToBoolConverter}}"/>
-                    <Button Content="Удалить" Command="{Binding DeleteCommand}" Width="100" 
-                    IsEnabled="{Binding SelectedRecord, Converter={StaticResource NullToBoolConverter}}"/>
-                    <Button Content="Экспорт в Word" Command="{Binding ExportToWordCommand}" Width="150" Margin="10,0,0,0"/>
-                </StackPanel>
+        <!-- Основная панель -->
+        <Grid Grid.Column="1" Background="#FFFFFF" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Панель кнопок -->
+                <RowDefinition Height="Auto"/>
+                <!-- Заголовки -->
+                <RowDefinition Height="*"/>
+                <!-- Список -->
+                <RowDefinition Height="Auto"/>
+                <!-- Пагинация -->
+            </Grid.RowDefinitions>
 
-                <!-- Разделим панель на две части: DataGrid и панель пагинации -->
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+            <!-- Кнопки управления -->
+            <StackPanel Orientation="Horizontal" Background="#F3F3F3" Grid.Row="0" Margin="0,0,0,5">
+                <Button Content="Добавить" Command="{Binding AddCommand}" Style="{StaticResource PrimaryButtonStyle}"/>
+                <Button Content="Редактировать" Command="{Binding EditCommand}" Style="{StaticResource PrimaryButtonStyle}"/>
+                <Button Content="Удалить" Command="{Binding DeleteCommand}" Style="{StaticResource PrimaryButtonStyle}"/>
+                <Button Content="Экспорт в Word" Command="{Binding ExportToWordCommand}" Style="{StaticResource PrimaryButtonStyle}"/>
+            </StackPanel>
 
-                    <DataGrid ItemsSource="{Binding PagedRecords}"
-                          SelectedItem="{Binding SelectedRecord}"
-                          AutoGenerateColumns="False"
-                          CanUserAddRows="False"
-                          IsReadOnly="True"
-                          Margin="0,0,0,50"
-                          MouseDoubleClick="DataGrid_MouseDoubleClick">     
+            <!-- Заголовки -->
+            <Grid Grid.Row="1" Background="#F3F3F3" Margin="0,0,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <!-- № п.п -->
+                    <ColumnDefinition Width="120"/>
+                    <!-- Дата оформ. -->
+                    <ColumnDefinition Width="200"/>
+                    <!-- Наименование -->
+                    <ColumnDefinition Width="120"/>
+                    <!-- Дата поддержки -->
+                    <ColumnDefinition Width="100"/>
+                    <!-- Статус -->
+                </Grid.ColumnDefinitions>
 
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="№ п.п" Binding="{Binding Id}" Width="50"/>
-                            <DataGridTextColumn Header="Дата оформ." Binding="{Binding DateOfCreation, StringFormat=d}" Width="120"/>
-                            <DataGridTextColumn Header="Наименование" Binding="{Binding NameDesignation}" Width="*"/>
-                            <DataGridTextColumn Header="Исполнитель" Binding="{Binding Executor}" Width="150"/>
-                            <DataGridTextColumn Header="Оконч. поддержки" Binding="{Binding SupportEndDate, StringFormat=d}" Width="150"/>
-                            <DataGridTextColumn Header="Статус" Binding="{Binding DaysLeftDisplay}" Width="150"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                <TextBlock Text="№ п.п" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Дата оформ." Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Наименование" Grid.Column="2" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Дата поддержки" Grid.Column="3" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Статус" Grid.Column="4" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
 
-                    <!-- Панель пагинации внизу -->
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                        <Button Content="Назад" Command="{Binding PreviousPageCommand}" Width="75" Margin="0,0,10,0"/>
-                        <TextBlock Text="{Binding CurrentPage}" VerticalAlignment="Center" FontWeight="Bold"/>
-                        <TextBlock Text=" из " VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding TotalPages}" VerticalAlignment="Center" FontWeight="Bold"/>
-                        <Button Content="Вперед" Command="{Binding NextPageCommand}" Width="75" Margin="10,0,0,0"/>
-                    </StackPanel>
-                </Grid>
-            </DockPanel>
-        </DockPanel>
+            <!-- ListView с полосками -->
+            <ListView ItemsSource="{Binding PagedRecords}" 
+          SelectedItem="{Binding SelectedRecord}" 
+          MouseDoubleClick="ListView_MouseDoubleClick"
+          Grid.Row="2" Background="#FFFFFF" BorderBrush="#D3D3D3" BorderThickness="1">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="#D3D3D3" BorderThickness="0,0,0,1" Padding="5">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50"/>
+                                    <!-- № п.п -->
+                                    <ColumnDefinition Width="120"/>
+                                    <!-- Дата оформ. -->
+                                    <ColumnDefinition Width="200"/>
+                                    <!-- Наименование -->
+                                    <ColumnDefinition Width="120"/>
+                                    <!-- Дата поддержки -->
+                                    <ColumnDefinition Width="100"/>
+                                    <!-- Статус -->
+                                </Grid.ColumnDefinitions>
 
+                                <!-- Поля строки -->
+                                <TextBlock Text="{Binding Id}" Grid.Column="0"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                <TextBlock Text="{Binding DateOfCreation, StringFormat={}{0:dd.MM.yyyy}}" Grid.Column="1"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                <!-- Решение для длинного текста -->
+                                <TextBlock Text="{Binding NameDesignation}" Grid.Column="2"
+                               HorizontalAlignment="Left" VerticalAlignment="Center"
+                               TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
+                               ToolTip="{Binding NameDesignation}"/>
+
+                                <TextBlock Text="{Binding SupportEndDate, StringFormat={}{0:dd.MM.yyyy}}" Grid.Column="3"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                <TextBlock Text="{Binding DaysLeftDisplay}" Grid.Column="4"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                               ToolTip="{Binding DaysLeftDisplay}"/>
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+
+            <!-- Пагинация -->
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Button Content="Назад" Command="{Binding PreviousPageCommand}" Style="{StaticResource PaginationButtonStyle}"/>
+                <TextBlock Text="{Binding CurrentPage}" FontWeight="Bold" VerticalAlignment="Center" Margin="10,0"/>
+                <TextBlock Text="из" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding TotalPages}" FontWeight="Bold" VerticalAlignment="Center" Margin="10,0"/>
+                <Button Content="Вперед" Command="{Binding NextPageCommand}" Style="{StaticResource PaginationButtonStyle}"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

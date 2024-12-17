@@ -1,5 +1,4 @@
-﻿// Converters/NullableBoolToRadioConverter.cs
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows.Data;
 
@@ -7,38 +6,29 @@ namespace SupportManager.Converters
 {
     public class NullableBoolToRadioConverter : IValueConverter
     {
-        // ConverterParameter ожидает "True", "False" или "None"
-        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string? param = parameter as string;
-            if (param == "None")
-            {
-                return value == null;
-            }
-            else if (bool.TryParse(param, out bool boolParam))
-            {
-                if (value is bool boolValue)
-                {
-                    return boolValue == boolParam;
-                }
-            }
+            if (parameter == null) return false;
+
+            if (value == null && parameter.ToString() == "None")
+                return true;
+
+            if (value is bool boolValue && bool.TryParse(parameter.ToString(), out var paramValue))
+                return boolValue == paramValue;
+
             return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string? param = parameter as string;
-            if (value is bool isChecked)
-            {
-                if (isChecked)
-                {
-                    if (param == "None")
-                        return null;
-                    else if (bool.TryParse(param, out bool boolParam))
-                        return boolParam;
-                }
-            }
-            return Binding.DoNothing;
+            if ((bool)value == false) return Binding.DoNothing;
+
+            if (parameter.ToString() == "None") return null;
+
+            if (bool.TryParse(parameter.ToString(), out var paramValue))
+                return paramValue;
+
+            return null;
         }
     }
 }

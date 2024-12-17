@@ -148,30 +148,41 @@ namespace SupportManager.ViewModels
         {
             var filtered = Records.AsEnumerable();
 
+            // Фильтрация по поиску
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 var lower = SearchText.ToLower();
-                filtered = filtered.Where(r => r.NameDesignation.ToLower().Contains(lower) || r.Executor.ToLower().Contains(lower));
+                filtered = filtered.Where(r => r.NameDesignation.ToLower().Contains(lower) ||
+                                               r.Executor.ToLower().Contains(lower));
             }
 
+            // Фильтрация по исполнителю
             if (!string.IsNullOrEmpty(SelectedExecutor) && SelectedExecutor != "Все")
+            {
                 filtered = filtered.Where(r => r.Executor == SelectedExecutor);
+            }
 
+            // Фильтрация по статусу поддержки
             if (IsActiveSupport.HasValue)
             {
-                if (IsActiveSupport.Value)
+                if (IsActiveSupport.Value) // Активная поддержка
                     filtered = filtered.Where(r => r.DaysLeft > 0);
-                else
+                else // Неактивная поддержка
                     filtered = filtered.Where(r => r.DaysLeft <= 0);
             }
 
+            // Обновляем коллекцию
             FilteredRecords.Clear();
             foreach (var record in filtered)
+            {
                 FilteredRecords.Add(record);
+            }
 
+            // Сбрасываем пагинацию на первую страницу
             CurrentPage = 1;
             UpdatePagedRecords();
         }
+
 
         private void UpdatePagedRecords()
         {
