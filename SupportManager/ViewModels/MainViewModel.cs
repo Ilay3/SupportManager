@@ -1,5 +1,7 @@
 ﻿// ViewModels/MainViewModel.cs
+using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using SupportManager.Helpers;
@@ -65,7 +67,7 @@ namespace SupportManager.ViewModels
 
         public int TotalPages => FilteredRecords.Count == 0 ? 1 : (int)Math.Ceiling((double)FilteredRecords.Count / PageSize);
 
-        private ObservableCollection<SupportRecord> _pagedRecords = new();
+        private ObservableCollection<SupportRecord> _pagedRecords = new ObservableCollection<SupportRecord>();
         public ObservableCollection<SupportRecord> PagedRecords
         {
             get => _pagedRecords;

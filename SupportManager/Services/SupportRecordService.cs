@@ -10,7 +10,8 @@ namespace SupportManager.Services
 {
     public class SupportRecordService : ISupportRecordService
     {
-        private readonly List<SupportRecord> _records = new();
+        private readonly List<SupportRecord> _records = new List<SupportRecord>();
+
         private int _nextId = 1;
         private readonly string _dataFilePath;
 

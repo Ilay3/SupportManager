@@ -1,4 +1,5 @@
 ﻿// Views/MainWindow.xaml.cs
+using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
