@@ -12,7 +12,32 @@ namespace SupportManager.Models
         public DateTime SupportEndDate { get; set; }
 
         public int DaysLeft => (SupportEndDate - DateTime.Now).Days;
-        public string DaysLeftDisplay => DaysLeft > 0 ? $"{DaysLeft} дн. осталось" : "Поддержка кончилась";
+        public string DaysLeftDisplay
+        {
+            get
+            {
+                var now = DateTime.Now;
+
+                var endOfSupport = SupportEndDate;
+
+                var timeDifference = endOfSupport - now;
+
+                if (timeDifference.TotalDays < 0)
+                {
+                    return "Поддержка кончилась";
+                }
+                else if (timeDifference.TotalDays < 1)
+                {
+                    return "Осталось меньше суток";
+                }
+                else
+                {
+                    return $"{(int)Math.Ceiling(timeDifference.TotalDays)} дн. осталось";
+                }
+            }
+        }
+
+
 
         // Новое поле для PDF файла
         public string PdfPath { get; set; } = "";

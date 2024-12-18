@@ -55,7 +55,7 @@ namespace SupportManager.ViewModels
             set { _selectedRecord = value; OnPropertyChanged(); }
         }
 
-        private const int PageSize = 20;
+        private const int PageSize = 5;
         private int _currentPage = 1;
         public int CurrentPage
         {
@@ -165,10 +165,16 @@ namespace SupportManager.ViewModels
             // Фильтрация по статусу поддержки
             if (IsActiveSupport.HasValue)
             {
+                var now = DateTime.Now;
+
                 if (IsActiveSupport.Value) // Активная поддержка
-                    filtered = filtered.Where(r => r.DaysLeft > 0);
+                {
+                    filtered = filtered.Where(r => r.SupportEndDate >= now);
+                }
                 else // Неактивная поддержка
-                    filtered = filtered.Where(r => r.DaysLeft <= 0);
+                {
+                    filtered = filtered.Where(r => r.SupportEndDate < now);
+                }
             }
 
             // Обновляем коллекцию
