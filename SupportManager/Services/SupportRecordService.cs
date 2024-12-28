@@ -1,5 +1,4 @@
-﻿// Services/SupportRecordService.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,20 +10,17 @@ namespace SupportManager.Services
     public class SupportRecordService : ISupportRecordService
     {
         private readonly List<SupportRecord> _records = new List<SupportRecord>();
-
         private int _nextId = 1;
         private readonly string _dataFilePath;
 
         public SupportRecordService()
         {
-            // Определяем путь к папке AppData\SupportManager
             var appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SupportManager");
             if (!Directory.Exists(appDataPath))
             {
                 Directory.CreateDirectory(appDataPath);
             }
 
-            // Определяем путь к файлу данных
             _dataFilePath = Path.Combine(appDataPath, "data.json");
             LoadData();
         }
@@ -71,23 +67,37 @@ namespace SupportManager.Services
 
         public void SaveChanges()
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            var json = JsonSerializer.Serialize(_records, options);
-            File.WriteAllText(_dataFilePath, json);
+            try
+            {
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                var json = JsonSerializer.Serialize(_records, options);
+                File.WriteAllText(_dataFilePath, json);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при сохранении данных: {ex.Message}");
+            }
         }
 
         public void LoadData()
         {
-            if (File.Exists(_dataFilePath))
+            try
             {
-                var json = File.ReadAllText(_dataFilePath);
-                var records = JsonSerializer.Deserialize<List<SupportRecord>>(json);
-                if (records != null)
+                if (File.Exists(_dataFilePath))
                 {
-                    _records.AddRange(records);
-                    if (_records.Any())
-                        _nextId = _records.Max(r => r.Id) + 1;
+                    var json = File.ReadAllText(_dataFilePath);
+                    var records = JsonSerializer.Deserialize<List<SupportRecord>>(json);
+                    if (records != null)
+                    {
+                        _records.AddRange(records);
+                        if (_records.Any())
+                            _nextId = _records.Max(r => r.Id) + 1;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при загрузке данных: {ex.Message}");
             }
         }
 
@@ -113,6 +123,5 @@ namespace SupportManager.Services
                 Console.WriteLine($"Ошибка при создании резервной копии: {ex.Message}");
             }
         }
-
     }
 }

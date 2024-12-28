@@ -65,7 +65,20 @@ namespace SupportManager.ViewModels
             set { _currentPage = value; OnPropertyChanged(); UpdatePagedRecords(); }
         }
 
-        public int TotalPages => FilteredRecords.Count == 0 ? 1 : (int)Math.Ceiling((double)FilteredRecords.Count / PageSize);
+        public int TotalPages
+        {
+            get
+            {
+                if (FilteredRecords.Count == 0)
+                {
+                    return 1; 
+                }
+                else
+                {
+                    return (int)Math.Ceiling((double)FilteredRecords.Count / PageSize);
+                }
+            }
+        }
 
         private ObservableCollection<SupportRecord> _pagedRecords = new ObservableCollection<SupportRecord>();
         public ObservableCollection<SupportRecord> PagedRecords
@@ -186,10 +199,14 @@ namespace SupportManager.ViewModels
                 FilteredRecords.Add(record);
             }
 
+            // Выводим информацию о фильтруемых данных
+            Console.WriteLine($"FilteredRecords.Count после фильтрации: {FilteredRecords.Count}");
+
             // Сбрасываем пагинацию на первую страницу
             CurrentPage = 1;
             UpdatePagedRecords();
         }
+
 
 
         private void UpdatePagedRecords()
@@ -205,15 +222,24 @@ namespace SupportManager.ViewModels
 
         private void NextPage()
         {
+            // Проверка на максимальное количество страниц
             if (CurrentPage < TotalPages)
+            {
                 CurrentPage++;
+                UpdatePagedRecords();
+            }
         }
 
         private void PreviousPage()
         {
+            // Проверка на минимальное количество страниц
             if (CurrentPage > 1)
+            {
                 CurrentPage--;
+                UpdatePagedRecords();
+            }
         }
+
 
         private void UpdateExecutors()
         {
